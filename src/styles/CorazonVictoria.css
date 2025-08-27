@@ -1,0 +1,24 @@
+.corazon-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.corazon-victoria {
+  font-size: 4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  animation: palpitar 1s infinite;
+  transition: transform 0.2s;
+}
+
+.corazon-victoria:hover {
+  transform: scale(1.2);
+}
+
+@keyframes palpitar {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}

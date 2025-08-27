@@ -1,0 +1,31 @@
+.quiz-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #fdf6f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+}
+
+.start-screen {
+  text-align: center;
+}
+
+.start-screen button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 10px;
+  border: none;
+  background: #ff6b81;
+  color: white;
+  transition: transform 0.2s;
+}
+
+.start-screen button:hover {
+  transform: scale(1.1);
+}
