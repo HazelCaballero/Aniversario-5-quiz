@@ -1,40 +1,14 @@
 .alerta {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 15px 20px;
-  border-radius: 10px;
-  animation: fadeIn 0.5s;
-  z-index: 1000;
-}
-
-.alerta-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.btn-aceptar, .btn-cancelar {
-  padding: 5px 12px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.btn-aceptar {
-  background: #4caf50;
-  color: white;
-}
-
-.btn-cancelar {
-  background: #f44336;
-  color: white;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 280px;
+  padding: 24px 18px;
+  z-index: 100;
+  background: #fff;
+  color: #333;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  text-align: center;
 }
