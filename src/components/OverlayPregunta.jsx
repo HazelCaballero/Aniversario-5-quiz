@@ -1,15 +1,14 @@
 import React from 'react';
-import '../styles/OverlayPregunta.css';
+import '../styles/unificados.css';
 
 export default function OverlayPregunta({ pregunta, respuestas, handleChange }) {
-  if (!pregunta) return null; // Si no hay pregunta actual, no renderiza
+  if (!pregunta) return null;
 
   const seleccionadas = respuestas[pregunta.id] || [];
 
   return (
     <div className="overlay-pregunta">
       <h3>{pregunta.pregunta}</h3>
-      
       <div className="opciones-container">
         {pregunta.opciones.map((opcion, idx) => (
           <div className="option" key={idx}>

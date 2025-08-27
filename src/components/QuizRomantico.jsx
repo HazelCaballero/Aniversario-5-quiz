@@ -1,169 +1,369 @@
-import React, { useState, useRef } from 'react';
-import CarruselImagenes from './CarruselImagenes';
-import OverlayPregunta from './OverlayPregunta';
-import BotonFinalizar from './BotonFinalizar';
-import CorazonVictoria from './CorazonVictoria';
-import Alertas from './Alertas';
-import '../styles/QuizRomantico.css';
-import audioFile from '../assets/audio/polar5.mp3';
+import React, { useState, useRef, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "../styles/unificados.css";
 
-import imagen1 from '../assets/imagenes/Beso en el cuello.jpeg';
-import imagen2 from '../assets/imagenes/TayFran.jpeg';
-import imagen3 from '../assets/imagenes/Boobs.jpeg';
-import imagen4 from '../assets/imagenes/Ardillita.jpg';
-import imagen5 from '../assets/imagenes/Inicio.jpg';
-import imagen6 from '../assets/imagenes/Aventura.JPG';
-import imagen7 from '../assets/imagenes/Cuidada.jpeg';
-import imagen8 from '../assets/imagenes/MYN.jpeg';
-import imagen9 from '../assets/imagenes/Susurro.jpeg';
-import imagen10 from '../assets/imagenes/Tesoro.jpg';
-import imagen11 from '../assets/imagenes/JM.jpg';
-import imagen12 from '../assets/imagenes/TN.jpeg';
-import imagen13 from '../assets/imagenes/Vamonos.jpg';
-import imagen14 from '../assets/imagenes/Domingo.jpeg';
-import imagen15 from '../assets/imagenes/Kiss.jpeg';
+import OverlayPregunta from "./OverlayPregunta";
+import CorazonVictoria from "./CorazonVictoria";
+import Swal from "sweetalert2";
 
-const imagenes = [
-  imagen1, imagen2, imagen3, imagen4, imagen5,
-  imagen6, imagen7, imagen8, imagen9, imagen10,
-  imagen11, imagen12, imagen13, imagen14, imagen15
+import imagen1 from "../assets/imagenes/TayFran.jpeg";
+import imagen2 from "../assets/imagenes/Beso en el cuello.jpeg";
+import imagen3 from "../assets/imagenes/Ardillita.jpg";
+import imagen4 from "../assets/imagenes/Aventura.JPG";
+import imagen5 from "../assets/imagenes/Cuidada.jpeg";
+import imagen6 from "../assets/imagenes/Inicio.jpg";
+import imagen7 from "../assets/imagenes/Tesoro.jpg";
+import imagen8 from "../assets/imagenes/TN.jpeg";
+import imagen9 from "../assets/imagenes/Susurro.jpeg";
+import imagen10 from "../assets/imagenes/Boobs.jpeg";
+import imagen11 from "../assets/imagenes/JM.jpg";
+import imagen12 from "../assets/imagenes/MYN.jpeg";
+import imagen13 from "../assets/imagenes/Vamonos.jpg";
+import imagen14 from "../assets/imagenes/Domingo.jpeg";
+import imagen15 from "../assets/imagenes/Kiss.jpeg";
+import audioFile from "../assets/audio/polar5.mp3";
+
+// Preguntas base
+const preguntasBase = [
+    { id: 1, pregunta: "¿Qué pasa el 3 de octubre?", 
+    opciones: ["Fran se casa y Taylor Swift lanza álbum", "Boda de Tay Tay y Travkilla", "Día internacional de emborracharse en una boda", "Taylor Swift lanza álbum y Fran se casa"], 
+    correcta: 3 },
+
+  { id: 2, pregunta: "¿Dónde fue nuestro primer beso?", 
+    opciones: ["En un cuarto ajeno", "El segundo piso", "En el jardín", "En la sala"], 
+    correcta: 0 },
+ 
+    { id: 3, pregunta: "Si tuviera que escoger un apodo divertido para mí, sería…", 
+    opciones: ["Galletita", "Burbuja", "Tornado", "Ardillita"], 
+    correcta: 3 },
+ 
+    { id: 4, pregunta: "¿Qué tipo de aventura me encantaría vivir contigo?", 
+    opciones: ["Conocer las auroras boreales", "Acampar en el Everest", "Vivir 2 meses en un país donde hablen otro idioma", "Ir al festival de Brazil"], 
+    correcta: 2 },
+ 
+    { id: 5, pregunta: "Cuando íbamos de viajes y senderos, lo que más me hacía sentir cuidado era…", 
+    opciones: ["Que me esperaras cuando me cansaba", "Que me ayudaras a llevar mis cosas", "Que sacaba fotos de mis momentos graciosos", "Que hicieras chistes malos sobre nuestra supervivencia"], 
+    correcta: 0 },
+ 
+    { id: 6, pregunta: "El título de nuestra 'sextape'", 
+    opciones: ["Hazel y Enrique: La Saga continúa", "Muslitos y Nalguitas en acción", "Roomies fuera de control", "Comemos primero y luego la cena"], 
+    correcta: 1 },
+ 
+    { id: 7, pregunta: "Actividad que nos anima juntos en casa", 
+    opciones: ["Cocinar y casi quemar todo", "Jugar juegos de mesa", "Hacer búsquedas del tesoro", "Lavar ropa juntos"], 
+    correcta: 2 },
+ 
+    { id: 8, pregunta: "Mi snack favorito cuando estamos juntos es…", 
+    opciones: ["Helado", "Palomitas de maíz", "Chocolate"], 
+    oculta: "Tus nalguitas", 
+    trigger: "Helado", 
+    ocultaActivada: false, 
+    tipo: "trigger-alert"},
+ 
+    {id: 9,
+    pregunta: "Películas que amamos ver juntos",
+    opciones: ["Ranch Comedy", "Acción", "Terror"],
+    oculta: "Cualquiera de Will Ferrell",
+    trigger: "Ranch Comedy",
+    ocultaActivada: false,
+    tipo: "trigger-alert"
+    },
+ 
+    { id: 10, pregunta: "Nuestro plan perfecto de fin de semana incluye…", 
+    opciones: ["Ver películas mientras cenamos", "Ir a senderos y parques naturales", "Jugar videojuegos o juegos de mesa"], 
+    oculta: "Todas las anteriores", 
+    ocultaActivada: false, 
+    correcta: 3,
+    tipo: "todas"  },
+ 
+    { id: 11, pregunta: "Nuestro plan ideal de domingo juntos es…", 
+    opciones: ["Maratón de pelis", "Comer rico", "Comernos ricos"], 
+    oculta: "Todas las anteriores", 
+    ocultaActivada: false, 
+    correcta: 3,
+    tipo: "todas" },
+ 
+    { id: 12, pregunta: "Mi beso favorito es…", 
+    opciones: ["Beso en la frente", "Beso en la mejilla", "Beso en el cuello"], 
+    oculta: "Todas las anteriores", 
+    ocultaActivada: false, 
+    correcta: 3,
+    tipo: "todas"},
+ 
+    { id: 13, pregunta: "Nuestro juego travieso en pareja incluye…", 
+    opciones: ["Que abraces inesperadamente", "Cuando me susurres algo travieso", "Cuando me mires fijamente"], 
+    oculta: "Que pidas irnos de un sitio porque me quieres coger", 
+    trigger: "Cuando me susurres algo travieso", 
+    ocultaActivada: false, 
+    tipo: "trigger-alert" },
+ 
+    { id: 14, pregunta: "Mi debilidad contigo es…", 
+    opciones: ["Cuando me miras fijamente", "Cuando me abrazas sin razón", "Cuando me susurras cosas al oído"], 
+    oculta: "Todas las anteriores", 
+    ocultaActivada: false, 
+    correcta: 3,
+    tipo: "todas"},
+ 
+    { id: 15, pregunta: "Qué detalle tuyo a distancia me pone hot?", 
+    opciones: ["Mensajes coquetos y provocativos", "Pequeños retos atrevidos", "Fotos sorpresa"], 
+    oculta: "Saber que te excita pensar en mí", 
+    trigger: "Mensajes coquetos y provocativos", 
+    ocultaActivada: false, 
+    tipo: "trigger-alert"}
 ];
 
 export default function QuizRomantico() {
   const [empezar, setEmpezar] = useState(false);
-  const [victoria, setVictoria] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [preguntaIndex, setPreguntaIndex] = useState(0);
   const [respuestas, setRespuestas] = useState({});
-  const [opcionesOcultas, setOpcionesOcultas] = useState({});
-  const [alerta, setAlerta] = useState({ visible: false, mensaje: '', tipo: 'auto' });
-
+  const [victoria, setVictoria] = useState(false);
+  const [preguntas, setPreguntas] = useState([]);
   const audioRef = useRef(null);
 
-  // === PREGUNTAS ===
-  const preguntas = [
-    // 1 a 15 según el orden final acordado
-    { id: 1, pregunta: "¿Qué me gusta más de ti?", opciones: ["Beso en el cuello", "Abrazos largos", "Susurros tiernos"], correcta: 0 },
-    { id: 2, pregunta: "¿Qué pasa el 3 de octubre?", opciones: ["Fran se casa y Taylor Swift lanza álbum","Boda de Tay Tay y Travkilla","Día internacional de emborracharse en una boda","Taylor Swift lanza álbum y Fran se casa"], correcta: 3 },
-    { id: 3, pregunta: "Mi debilidad contigo es…", opciones: ["Cuando me miras fijamente","Cuando me abrazas sin razón","Cuando me susurras cosas al oído"], correcta: 3, oculta: "Todas las anteriores", tipo: 1 },
-    { id: 4, pregunta: "Si tuviera que escoger un apodo divertido para mí, sería…", opciones: ["Galletita","Burbuja","Tornado","Ardillita"], correcta: 3 },
-    { id: 5, pregunta: "Mi snack favorito cuando estamos juntos es…", opciones: ["Helado","Palomitas de maíz","Chocolate"], correcta: 3, oculta: "Tus nalguitas", tipo: 2, trigger: 0 },
-    { id: 6, pregunta: "¿Qué tipo de aventura me encantaría vivir contigo?", opciones: ["Conocer las auroras boreales","Acampar en el Everest","Vivir 2 meses en un país donde hablen otro idioma","Ir al festival de Brazil"], correcta: 2 },
-    { id: 7, pregunta: "Cuando íbamos de viajes y senderos, lo que más me hacía sentir cuidado era…", opciones: ["Que me esperaba cuando me cansaba","Que me ayudara a llevar mis cosas","Que sacaba fotos de mis momentos graciosos","Que hacía chistes malos sobre nuestra supervivencia"], correcta: 0 },
-    { id: 8, pregunta: "Películas que amamos ver juntos", opciones: ["Ranch Comedy","Acción","Terror"], correcta: 3, oculta: "Opción secreta Will Ferrell", tipo: 2, trigger: 0 },
-    { id: 9, pregunta: "El título de nuestra 'sextape' estilo Brooklyn 99", opciones: ["Hazel y Enrique: La Saga continúa","Muslitos y Nalguitas en acción","Roomies fuera de control","Comemos primero y luego la cena"], correcta: 1 },
-    { id: 10, pregunta: "Actividad que nos anima juntos en casa", opciones: ["Cocinar y casi quemar todo","Jugar juegos de mesa","Hacer búsquedas del tesoro","Lavar ropa juntos"], correcta: 2 },
-    { id: 11, pregunta: "Nuestro plan ideal de domingo juntos es…", opciones: ["Maratón de pelis","Comer rico","Comernos ricos"], correcta: 3, oculta: "Todas las anteriores", tipo: 1 },
-    { id: 12, pregunta: "Pensamientos atrevidos a distancia", opciones: ["Mensajes coquetos","Pequeños retos atrevidos","Fotos sorpresa"], correcta: 3, oculta: "Saber que te excita pensar en mí", tipo: 2, trigger: 0 },
-    { id: 13, pregunta: "Qué me haría pedir irnos de un sitio juntos", opciones: ["Cuando me abrazas","Cuando me toca la mano","Cuando me desea"], correcta: 3, oculta: "Que me pide irnos porque me desea", tipo: 2, trigger: 2 },
-    { id: 14, pregunta: "Domingo perfecto juntos", opciones: ["Maratón de pelis","Comer rico","Paseo por el parque"], correcta: 2 },
-    { id: 15, pregunta: "Un momento hot cuando estamos juntos", opciones: ["Besos intensos","Caricias suaves","Susurros provocativos"], correcta: 2 },
+  const imagenes = [
+    imagen1, imagen2, imagen3, imagen4, imagen5,
+    imagen6, imagen7, imagen8, imagen9, imagen10,
+    imagen11, imagen12, imagen13, imagen14, imagen15
   ];
 
-  // === HANDLER DE CAMBIO DE OPCIONES ===
-  const handleChange = (pregId, idx) => {
-    const pregunta = preguntas.find(p => p.id === pregId);
-    const actuales = respuestas[pregId] || [];
-    let nuevas = [...actuales];
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
-    if (nuevas.includes(idx)) {
-      nuevas = nuevas.filter(i => i !== idx);
-    } else {
-      nuevas.push(idx);
-    }
+  // Mezclar preguntas al montar
+  useEffect(() => {
+    const mezcladas = [...preguntasBase].sort(() => Math.random() - 0.5);
+    setPreguntas(mezcladas);
+  }, []);
 
-    // Logica tipo 1
-    if (pregunta.tipo === 1 && nuevas.length === pregunta.opciones.length) {
-      setOpcionesOcultas({...opcionesOcultas, [pregId]: true});
-      nuevas = []; // desmarcar todas
-    }
 
-    // Logica tipo 2
-    if (pregunta.tipo === 2 && idx === pregunta.trigger && !opcionesOcultas[pregId]) {
-      setAlerta({ visible: true, mensaje: "¿Quieres marcar esta opción?", tipo: "confirm",
-        onConfirm: () => {
-          setOpcionesOcultas({...opcionesOcultas, [pregId]: false});
-          setAlerta({ ...alerta, visible: false });
-        },
-        onCancel: () => {
-          setOpcionesOcultas({...opcionesOcultas, [pregId]: true});
-          nuevas = []; // desmarcar
-          setAlerta({ ...alerta, visible: false });
-        }
-      });
-    }
+const handleChange = (pregId, idx) => {
+  const actuales = respuestas[pregId] || [];
+  let nuevas = [...actuales];
+  const preguntaActual = preguntas.find(p => p.id === pregId);
 
-    setRespuestas({...respuestas, [pregId]: nuevas});
-  };
+  // Agregar o quitar selección
+  if (nuevas.includes(idx)) {
+    nuevas = nuevas.filter(i => i !== idx);
+  } else {
+    nuevas.push(idx);
+  }
 
-  // === HANDLER DE FINALIZAR ===
-  const handleSubmit = () => {
-    // Validar que todas estén respondidas
-    const todasRespondidas = preguntas.every(p => respuestas[p.id]?.length > 0 || opcionesOcultas[p.id]);
-    if (!todasRespondidas) {
-      setAlerta({ visible: true, mensaje: "Debes responder todas las preguntas", tipo: "auto" });
-      setTimeout(()=> setAlerta({ ...alerta, visible:false }), 5000);
-      return;
-    }
+  // Determinar tipo de pregunta
+  const tipo = preguntaActual.tipo || "trigger";
 
-    // Validar si ganó
-    const todasCorrectas = preguntas.every(p => {
-      if (p.tipo && opcionesOcultas[p.id]) return true;
-      return respuestas[p.id]?.includes(p.correcta);
+  if (tipo === "confirm" && idx === 0) {
+    Swal.fire({
+      text: "¿Quieres marcar esta opción?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Sí",
+      cancelButtonText: "No"
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        setPreguntas(prev =>
+          prev.map(p =>
+            p.id === pregId ? { ...p, ocultaActivada: true } : p
+          )
+        );
+        setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+      } else {
+        setRespuestas(prev => ({ ...prev, [pregId]: actuales }));
+      }
     });
+  } else if (tipo === "todas") {
+    if (!preguntaActual.alertaMostrada) {
+      Swal.fire({
+        text: "¿No quieres marcar otra?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí",
+        cancelButtonText: "No"
+      }).then((result) => {
+        setPreguntas(prev =>
+          prev.map(p =>
+            p.id === pregId ? { ...p, alertaMostrada: true } : p
+          )
+        );
 
-    if (todasCorrectas) {
-      setVictoria(true);
+        if (!result.isConfirmed && preguntaActual?.oculta) {
+          setPreguntas(prev =>
+            prev.map(p =>
+              p.id === pregId ? { ...p, ocultaActivada: true } : p
+            )
+          );
+        }
+
+        setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+      });
     } else {
-      setAlerta({ visible: true, mensaje: "Lo siento mi vida, inténtalo otra vez 😢", tipo: "auto" });
-      setTimeout(() => setAlerta({ ...alerta, visible:false }), 5000);
-      setRespuestas({});
-      setOpcionesOcultas({});
+      setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
     }
-  };
 
-  const preguntaActual = preguntas[currentIndex];
+    const totalOpciones = preguntaActual.opciones.length;
+    if (nuevas.length === totalOpciones && preguntaActual?.oculta) {
+      setPreguntas(prev =>
+        prev.map(p =>
+          p.id === pregId ? { ...p, ocultaActivada: true } : p
+        )
+      );
+    }
+  } else if (tipo === "trigger-alert") {
+    if (preguntaActual.trigger === preguntaActual.opciones[idx]) {
+      Swal.fire({
+        text: "¿Estás seguro?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí",
+        cancelButtonText: "No"
+      }).then((result) => {
+        if (result.isConfirmed && preguntaActual?.oculta) {
+          setPreguntas(prev =>
+            prev.map(p =>
+              p.id === pregId ? { ...p, ocultaActivada: true } : p
+            )
+          );
+        }
+        setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+      });
+    } else {
+      setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+    }
+  } else {
+    if (preguntaActual?.oculta && preguntaActual.trigger === preguntaActual.opciones[idx]) {
+      setPreguntas(prev =>
+        prev.map(p =>
+          p.id === pregId ? { ...p, ocultaActivada: true } : p
+        )
+      );
+    }
+    setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+  }
+};
+
+
+const handleSubmit = () => {
+  // Antes estaba así:
+  // const todasRespondidas = preguntas.every(p => (respuestas[p.id] || []).length > 0);
+
+  // Reemplazar por esto:
+  const todasRespondidas = preguntas.every(p => {
+    const r = respuestas[p.id] || [];
+    return r.length > 0 || p.ocultaActivada; // Marca como respondida si tiene respuesta o se activó la oculta
+  });
+
+  if (!todasRespondidas) {
+    Swal.fire({ text: "Debes responder todas las preguntas", timer: 5000, showConfirmButton: false });
+    return;
+  }
+
+const handleSubmit = () => {
+  // Antes estaba así:
+  // const todasRespondidas = preguntas.every(p => (respuestas[p.id] || []).length > 0);
+
+  // Reemplazar por esto:
+  const todasRespondidas = preguntas.every(p => {
+    const r = respuestas[p.id] || [];
+    return r.length > 0 || p.ocultaActivada; // Marca como respondida si tiene respuesta o se activó la oculta
+  });
+
+  if (!todasRespondidas) {
+    Swal.fire({ text: "Debes responder todas las preguntas", timer: 5000, showConfirmButton: false });
+    return;
+  }
+
+  const todasCorrectas = true; // Puedes evaluar según tu lógica
+  if (todasCorrectas) {
+    setVictoria(true);
+    Swal.fire({
+      text: "Feliz aniversario mi amor, te quiero mucho",
+      timer: 5000,
+      showConfirmButton: false,
+    });
+  } else {
+    Swal.fire({
+      text: "Lo siento mi vida, inténtalo otra vez",
+      timer: 5000,
+      showConfirmButton: false,
+    });
+    setRespuestas({});
+  }
+};
+
+const todasCorrectas = true; // Puedes evaluar según tu lógica
+if (todasCorrectas) {
+  Swal.fire({
+    text: "Feliz aniversario mi amor, te quiero mucho",
+    timer: 5000,
+    showConfirmButton: false, // Sin botón
+    didClose: () => {
+      setVictoria(true); // Se muestra el corazón mientras la alerta está activa
+      // audioRef.current.play(); // Si quieres reproducir audio al mismo tiempo
+    }
+  });
+} else {
+  Swal.fire({
+    text: "Lo siento mi vida, inténtalo otra vez",
+    timer: 5000,
+    showConfirmButton: false, // Sin botón
+  });
+  setRespuestas({});
+}
+}
+ 
+
 
   return (
     <div className="quiz-container">
       {!empezar ? (
         <div className="start-screen">
-          <h1>¿Sabes que te quiero? ❤️</h1>
+          <h1>¿Sabes que te quiero?</h1>
           <button onClick={() => setEmpezar(true)}>Empezar</button>
         </div>
       ) : (
         <>
-          <CarruselImagenes
-            imagenes={imagenes}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-          />
+          <Swiper
+            modules={[Navigation]}
+            slidesPerView={1}
+            centeredSlides={true}
+            navigation={{
+              prevEl: prevRef.current,
+              nextEl: nextRef.current
+            }}
+            onInit={(swiper) => {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+              swiper.navigation.init();
+              swiper.navigation.update();
+            }}
+            onSlideChange={(swiper) => setPreguntaIndex(swiper.activeIndex)}
+          >
+            {imagenes.map((img, idx) => (
+              <SwiperSlide key={idx}>
+                <div className="slide-wrapper">
+                  <img src={img} alt={`slide-${idx}`} className="slide-img" />
+                  <OverlayPregunta
+                    pregunta={preguntas[idx]}
+                    respuestas={respuestas}
+                    handleChange={handleChange}
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
 
-          <OverlayPregunta
-            pregunta={{ ...preguntaActual, ocultaActivada: opcionesOcultas[preguntaActual.id] }}
-            respuestas={respuestas}
-            handleChange={handleChange}
-          />
+            <div ref={prevRef} className="swiper-button-prev">❤️</div>
+            <div ref={nextRef} className="swiper-button-next">❤️</div>
+          </Swiper>
 
-          {!victoria ? (
-            <BotonFinalizar
-              handleSubmit={handleSubmit}
-              disabled={false}
-            />
-          ) : (
-            <CorazonVictoria
-              onClick={() => audioRef.current.play()}
-            />
+          {!victoria && (
+            <button className="btn-finalizar" onClick={handleSubmit}>Finalizar</button>
           )}
 
-          <audio ref={audioRef} src={audioFile} />
+          {victoria && <CorazonVictoria audioRef={audioRef} />}
 
-          <Alertas
-            mensaje={alerta.mensaje}
-            tipo={alerta.tipo}
-            visible={alerta.visible}
-            onConfirm={alerta.onConfirm}
-            onCancel={alerta.onCancel}
-          />
+          <audio ref={audioRef} src={audioFile} />
         </>
       )}
     </div>
