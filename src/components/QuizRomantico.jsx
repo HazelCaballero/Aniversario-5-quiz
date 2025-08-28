@@ -4,27 +4,31 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "../styles/unificados.css";
-
 import OverlayPregunta from "./OverlayPregunta";
 import CorazonVictoria from "./CorazonVictoria";
 import Swal from "sweetalert2";
 
-import imagen1 from "../assets/imagenes/TayFran.jpeg";
-import imagen2 from "../assets/imagenes/Beso en el cuello.jpeg";
-import imagen3 from "../assets/imagenes/Ardillita.jpg";
-import imagen4 from "../assets/imagenes/Aventura.JPG";
-import imagen5 from "../assets/imagenes/Cuidada.jpeg";
-import imagen6 from "../assets/imagenes/Inicio.jpg";
-import imagen7 from "../assets/imagenes/Tesoro.jpg";
-import imagen8 from "../assets/imagenes/TN.jpeg";
-import imagen9 from "../assets/imagenes/Susurro.jpeg";
-import imagen10 from "../assets/imagenes/Boobs.jpeg";
-import imagen11 from "../assets/imagenes/JM.jpg";
-import imagen12 from "../assets/imagenes/MYN.jpeg";
-import imagen13 from "../assets/imagenes/Vamonos.jpg";
-import imagen14 from "../assets/imagenes/Domingo.jpeg";
-import imagen15 from "../assets/imagenes/Kiss.jpeg";
-import audioFile from "../assets/audio/polar5.mp3";
+
+const imagenes = [
+  "/imagenes/TayFran.jpeg",
+  "/imagenes/BesoEnElCuello.jpeg",
+  "/imagenes/Ardillita.jpg",
+  "/imagenes/Aventura.jpg",
+  "/imagenes/Cuidada.jpeg",
+  "/imagenes/Inicio.jpg",
+  "/imagenes/Tesoro.jpg",
+  "/imagenes/TN.jpeg",
+  "/imagenes/Susurro.jpeg",
+  "/imagenes/Boobs.jpeg",
+  "/imagenes/JM.jpg",
+  "/imagenes/MYN.jpeg",
+  "/imagenes/Vamonos.jpg",
+  "/imagenes/Domingo.jpeg",
+  "/imagenes/Kiss.jpeg"
+];
+
+<audio ref={audioRef} src="/audio/polar5.mp3" />
+
 
 // Preguntas base
 const preguntasBase = [
