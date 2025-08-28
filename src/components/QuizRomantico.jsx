@@ -62,20 +62,115 @@ export default function QuizRomantico() {
   }, []);
 
   // Manejar selección de opciones
-  const handleChange = (preguntaId, opcionIdx) => {
-    setRespuestas((prev) => {
-      const actuales = prev[preguntaId] || [];
-      let nuevas;
+  // Manejar selección de opciones con la lógica original
+const handleChange = (pregId, idx) => {
+  const preguntaActual = preguntas.find(p => p.id === pregId);
+  if (!preguntaActual) return;
 
-      if (actuales.includes(opcionIdx)) {
-        nuevas = actuales.filter((o) => o !== opcionIdx);
+  const actuales = respuestas[pregId] || [];
+  let nuevas = [...actuales];
+
+  // togglear selección
+  if (nuevas.includes(idx)) {
+    nuevas = nuevas.filter(i => i !== idx);
+  } else {
+    nuevas.push(idx);
+  }
+
+  const tipo = preguntaActual.tipo || "trigger";
+
+  if (tipo === "confirm" && idx === 0) {
+    Swal.fire({
+      text: "¿Quieres marcar esta opción?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Sí",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        // activar oculta
+        setPreguntas(prev =>
+          prev.map(p => p.id === pregId ? { ...p, ocultaActivada: true } : p)
+        );
+        setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
       } else {
-        nuevas = [...actuales, opcionIdx];
+        // revertir selección
+        setRespuestas(prev => ({ ...prev, [pregId]: actuales }));
       }
-
-      return { ...prev, [preguntaId]: nuevas };
     });
-  };
+  } else if (tipo === "todas") {
+    if (!preguntaActual.alertaMostrada) {
+      Swal.fire({
+        text: "¿No quieres marcar otra?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí",
+        cancelButtonText: "No",
+      }).then((result) => {
+        setPreguntas(prev =>
+          prev.map(p =>
+            p.id === pregId ? { ...p, alertaMostrada: true } : p
+          )
+        );
+
+        if (!result.isConfirmed && preguntaActual?.oculta) {
+          setPreguntas(prev =>
+            prev.map(p =>
+              p.id === pregId ? { ...p, ocultaActivada: true } : p
+            )
+          );
+        }
+
+        setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+      });
+    } else {
+      setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+    }
+
+    // si marcó todas las opciones visibles, activa la oculta
+    const totalOpciones = preguntaActual.opciones.length;
+    if (nuevas.length === totalOpciones && preguntaActual?.oculta) {
+      setPreguntas(prev =>
+        prev.map(p =>
+          p.id === pregId ? { ...p, ocultaActivada: true } : p
+        )
+      );
+    }
+  } else if (tipo === "trigger-alert") {
+    if (preguntaActual.trigger === preguntaActual.opciones[idx]) {
+      Swal.fire({
+        text: "¿Estás seguro?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí",
+        cancelButtonText: "No",
+      }).then((result) => {
+        if (result.isConfirmed && preguntaActual?.oculta) {
+          setPreguntas(prev =>
+            prev.map(p =>
+              p.id === pregId ? { ...p, ocultaActivada: true } : p
+            )
+          );
+        }
+        setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+      });
+    } else {
+      setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+    }
+  } else {
+    // default: si coincide trigger, activar oculta
+    if (preguntaActual?.oculta &&
+        preguntaActual.trigger === preguntaActual.opciones[idx]) {
+      setPreguntas(prev =>
+        prev.map(p =>
+          p.id === pregId ? { ...p, ocultaActivada: true } : p
+        )
+      );
+    }
+    setRespuestas(prev => ({ ...prev, [pregId]: nuevas }));
+  }
+};
+
 
   const handleSubmit = () => {
     const todasRespondidas = preguntas.every(p => {
