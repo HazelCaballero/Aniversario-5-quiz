@@ -171,8 +171,7 @@ const handleChange = (pregId, idx) => {
   }
 };
 
-
-  const handleSubmit = () => {
+const handleSubmit = () => {
   const todasRespondidas = preguntas.every(p => {
     const r = respuestas[p.id] || [];
     return r.length > 0 || p.ocultaActivada;
@@ -198,18 +197,7 @@ const handleChange = (pregId, idx) => {
   });
 };
 
-
-    setVictoria(true);
-    Swal.fire({
-      text: "Feliz aniversario mi amor, te quiero mucho",
-      timer: 5000,
-      showConfirmButton: false,
-      didClose: () => {
-        audioRef.current?.play();
-      }
-    });
-  };
-
+  
   const renderImg = (idx) => {
     const imgData = imagenesCargadas[idx];
     if (!imgData) return <div className="placeholder">Cargando...</div>;
