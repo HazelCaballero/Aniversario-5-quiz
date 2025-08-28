@@ -8,8 +8,7 @@ import OverlayPregunta from "./OverlayPregunta";
 import CorazonVictoria from "./CorazonVictoria";
 import Swal from "sweetalert2";
 
-// Preguntas base
-import { preguntasBase } from "../data/preguntasBase"; // si las quieres en otro archivo
+import { preguntasBase } from "../data/preguntasBase";
 
 export default function QuizRomantico() {
   const [empezar, setEmpezar] = useState(false);
@@ -17,14 +16,17 @@ export default function QuizRomantico() {
   const [respuestas, setRespuestas] = useState({});
   const [victoria, setVictoria] = useState(false);
   const [preguntas, setPreguntas] = useState([]);
+  const [imagenesCargadas, setImagenesCargadas] = useState([]);
 
-  const audioRef = useRef(null); // ✅ Hook dentro del componente
+  const audioRef = useRef(null);
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   const imagenes = [
     "/imagenes/TayFran.jpeg",
-    "/imagenes/BesoEnElCuello.jpeg",
+    "/imagenes/Besoenelcuello.jpeg",
     "/imagenes/Ardillita.jpg",
-    "/imagenes/Aventura.jpg",
+    "/imagenes/Aventura.JPG",
     "/imagenes/Cuidada.jpeg",
     "/imagenes/Inicio.jpg",
     "/imagenes/Tesoro.jpg",
@@ -38,12 +40,26 @@ export default function QuizRomantico() {
     "/imagenes/Kiss.jpeg"
   ];
 
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
-
+  // Mezclar preguntas al iniciar
   useEffect(() => {
     const mezcladas = [...preguntasBase].sort(() => Math.random() - 0.5);
     setPreguntas(mezcladas);
+  }, []);
+
+  // Precargar imágenes
+  useEffect(() => {
+    const carga = imagenes.map((src) => {
+      return new Promise((res) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => res({ src, status: "ok" });
+        img.onerror = () => res({ src, status: "error" });
+      });
+    });
+
+    Promise.all(carga).then((results) => {
+      setImagenesCargadas(results);
+    });
   }, []);
 
   const handleSubmit = () => {
@@ -63,9 +79,16 @@ export default function QuizRomantico() {
       timer: 5000,
       showConfirmButton: false,
       didClose: () => {
-        audioRef.current?.play(); // reproduce audio
+        audioRef.current?.play();
       }
     });
+  };
+
+  const renderImg = (idx) => {
+    const imgData = imagenesCargadas[idx];
+    if (!imgData) return <div className="placeholder">Cargando...</div>;
+    if (imgData.status === "error") return <div className="placeholder">Imagen no disponible</div>;
+    return <img src={imgData.src} alt={`slide-${idx}`} className="slide-img" />;
   };
 
   return (
@@ -93,10 +116,10 @@ export default function QuizRomantico() {
             }}
             onSlideChange={(swiper) => setPreguntaIndex(swiper.activeIndex)}
           >
-            {imagenes.map((img, idx) => (
+            {imagenes.map((_, idx) => (
               <SwiperSlide key={idx}>
                 <div className="slide-wrapper">
-                  <img src={img} alt={`slide-${idx}`} className="slide-img" />
+                  {renderImg(idx)}
                   <OverlayPregunta
                     pregunta={preguntas[idx]}
                     respuestas={respuestas}
