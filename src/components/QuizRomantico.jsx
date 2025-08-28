@@ -27,6 +27,7 @@ const imagenes = [
   "/imagenes/Kiss.jpeg"
 ];
 
+const audioRef = useRef(null);
 <audio ref={audioRef} src="/audio/polar5.mp3" />
 
 
