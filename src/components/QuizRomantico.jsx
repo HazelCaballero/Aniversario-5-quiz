@@ -173,15 +173,31 @@ const handleChange = (pregId, idx) => {
 
 
   const handleSubmit = () => {
-    const todasRespondidas = preguntas.every(p => {
-      const r = respuestas[p.id] || [];
-      return r.length > 0 || p.ocultaActivada;
-    });
+  const todasRespondidas = preguntas.every(p => {
+    const r = respuestas[p.id] || [];
+    return r.length > 0 || p.ocultaActivada;
+  });
 
-    if (!todasRespondidas) {
-      Swal.fire({ text: "Debes responder todas las preguntas", timer: 5000, showConfirmButton: false });
-      return;
+  if (!todasRespondidas) {
+    Swal.fire({
+      text: "Debes responder todas las preguntas",
+      timer: 5000,
+      showConfirmButton: false
+    });
+    return;
+  }
+
+  Swal.fire({
+    text: "Feliz aniversario mi amor, te quiero mucho",
+    timer: 5000,
+    showConfirmButton: false,
+    didClose: () => {
+      setVictoria(true);          // <-- Se activa después del cierre
+      audioRef.current?.play();   // Reproduce audio cuando aparece corazón
     }
+  });
+};
+
 
     setVictoria(true);
     Swal.fire({
