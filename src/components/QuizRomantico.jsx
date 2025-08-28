@@ -7,7 +7,6 @@ import "../styles/unificados.css";
 import OverlayPregunta from "./OverlayPregunta";
 import CorazonVictoria from "./CorazonVictoria";
 import Swal from "sweetalert2";
-
 import { preguntasBase } from "../data/preguntasBase";
 
 export default function QuizRomantico() {
@@ -61,6 +60,22 @@ export default function QuizRomantico() {
       setImagenesCargadas(results);
     });
   }, []);
+
+  // Manejar selección de opciones
+  const handleChange = (preguntaId, opcionIdx) => {
+    setRespuestas((prev) => {
+      const actuales = prev[preguntaId] || [];
+      let nuevas;
+
+      if (actuales.includes(opcionIdx)) {
+        nuevas = actuales.filter((o) => o !== opcionIdx);
+      } else {
+        nuevas = [...actuales, opcionIdx];
+      }
+
+      return { ...prev, [preguntaId]: nuevas };
+    });
+  };
 
   const handleSubmit = () => {
     const todasRespondidas = preguntas.every(p => {
@@ -123,7 +138,7 @@ export default function QuizRomantico() {
                   <OverlayPregunta
                     pregunta={preguntas[idx]}
                     respuestas={respuestas}
-                    handleChange={() => {}}
+                    handleChange={handleChange}
                   />
                 </div>
               </SwiperSlide>
